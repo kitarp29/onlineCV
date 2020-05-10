@@ -9,4 +9,4 @@ console.log('Im ALIVE BITCH!!');
 
 self.addEventListener('fetch',evt=>{
   console.log('fetch event',evt);
-})
+});
