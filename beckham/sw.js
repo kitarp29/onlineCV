@@ -35,15 +35,10 @@ const assets =[
 
 ];
 
-self.addEventListener('install', evt =>{
-  // console.log('bitch is installed');
-  evt.waitUntil(  caches.open(staticCacheName).then(cache =>{
-      console.log('caching assets');
-      cache.addAll(assets);
-      })
-  );
-
+self.addEventListener('install', function(event) {
+  // Perform install steps
 });
+
 
 
 self.addEventListener('activate',evt =>{
