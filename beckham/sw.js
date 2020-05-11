@@ -2,9 +2,9 @@ const  staticCacheName = 'site-static';
 const assets =[
   '/',
   '/index.html',
+  '/fallback.html',
   '/about.html',
-  'contact.html',
-  'portfolio.html',
+  '/portfolio.html',
   '/js/aos.js',
   '/js/app.js',
   '/js/bootstrap-datepicker.js',
@@ -31,8 +31,12 @@ const assets =[
   '/images/IMG-20191212-WA0018.jpg',
   '/images/IMG20191222210621.jpg',
   '/images/pk.jpg',
+  '/images/tindog.png',
+  '/images/dice.png',
+  '/images/drum.png',
+  '/images/dailyJournal.png',
+  '/images/Todolist.png',
 'https://fonts.googleapis.com/css?family=Poppins:300,400,700',
-'https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false',
 '/css/bootstrap/bootstrap-grid.css',
 '/css/bootstrap/bootstrap-reboot.css',
 '/css/css/mixins/_text-hide.css',
@@ -50,7 +54,6 @@ const assets =[
 '/css/owl.carousel.min.css',
 '/css/owl.theme.default.min.css',
 '/css/style.css'
-
 
 ];
 
@@ -72,17 +75,31 @@ self.addEventListener('install', evt => {
 
 self.addEventListener('activate',evt =>{
 // console.log('Im ALIVE BITCH!!');
+evt.waitUntil(
+  caches.keys().then(keys => {
+    // console.log(keys);//pk
+    return Promise.all(keys
+    .filter(key => key !== staticCacheName)
+    .map(key => caches.delete(key))
+    //delete old caches
+  )
+  })
+);
 });
 
-self.addEventListener('fetch',evt=>{
-  // console.log('fetch event',evt);
-});
 
-self.addEventListener('fetch', evt => {
-  //console.log('fetch event', evt);
-  evt.respondWith(
-    caches.match(evt.request).then(cacheRes => {
-      return cacheRes || fetch(evt.request);
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    // Try the cache
+    caches.match(event.request).then(function(response) {
+      // Fall back to network
+      return response || fetch(event.request);
+    }).catch(function() {
+      // If both fail, show a generic fallback:
+      return caches.match('/fallback.html');
+      // However, in reality you'd have many different
+      // fallbacks, depending on URL & headers.
+      // Eg, a fallback silhouette image for avatars.
     })
   );
 });
