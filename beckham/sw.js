@@ -30,7 +30,26 @@ const assets =[
   '/images/image_6.jpg',
   '/images/IMG-20191212-WA0018.jpg',
   '/images/IMG20191222210621.jpg',
-  '/images/pk.jpg'
+  '/images/pk.jpg',
+'https://fonts.googleapis.com/css?family=Poppins:300,400,700',
+'https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false',
+'/css/bootstrap/bootstrap-grid.css',
+'/css/bootstrap/bootstrap-reboot.css',
+'/css/css/mixins/_text-hide.css',
+'/css/css/bootstrap-reboot.css',
+'/css/animate.css',
+'/css/aos.css',
+'/css/bootstrap-datepicker.css',
+'/css/bootstrap.min.css',
+'/css/flaticon.css',
+'/css/icomoon.css',
+'/css/ionicons.min.css',
+'/css/jquery.timepicker.css',
+'/css/magnific-popup.css',
+'/css/open-iconic-bootstrap.min.css',
+'/css/owl.carousel.min.css',
+'/css/owl.theme.default.min.css',
+'/css/style.css'
 
 
 ];
@@ -40,6 +59,16 @@ self.addEventListener('install', function(event) {
 });
 
 
+self.addEventListener('install', evt => {
+  //console.log('service worker installed');
+  evt.waitUntil(
+    caches.open(staticCacheName).then((cache) => {
+      console.log('caching shell assets');
+      cache.addAll(assets);
+    })
+  );
+});
+
 
 self.addEventListener('activate',evt =>{
 // console.log('Im ALIVE BITCH!!');
@@ -47,4 +76,13 @@ self.addEventListener('activate',evt =>{
 
 self.addEventListener('fetch',evt=>{
   // console.log('fetch event',evt);
+});
+
+self.addEventListener('fetch', evt => {
+  //console.log('fetch event', evt);
+  evt.respondWith(
+    caches.match(evt.request).then(cacheRes => {
+      return cacheRes || fetch(evt.request);
+    })
+  );
 });
