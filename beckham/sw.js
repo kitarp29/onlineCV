@@ -56,50 +56,49 @@ const assets =[
 '/css/style.css'
 
 ];
-
-self.addEventListener('install', function(event) {
-  // Perform install steps
+addEventListener('install', (event) => {
+  event.waitUntil(async function() {
+    const cache = await caches.open('static-v1');
+    await cache.addAll(assets);
+  }());
 });
 
-
-self.addEventListener('install', evt => {
-  //console.log('service worker installed');
-  evt.waitUntil(
-    caches.open(staticCacheName).then((cache) => {
-      console.log('caching shell assets');
-      cache.addAll(assets);
-    })
-  );
+// See https://developers.google.com/web/updates/2017/02/navigation-preload#activating_navigation_preload
+addEventListener('activate', event => {
+  event.waitUntil(async function() {
+    // Feature-detect
+    if (self.registration.navigationPreload) {
+      // Enable navigation preloads!
+      await self.registration.navigationPreload.enable();
+    }
+  }());
 });
 
+addEventListener('fetch', (event) => {
+  const { request } = event;
 
-self.addEventListener('activate',evt =>{
-// console.log('Im ALIVE BITCH!!');
-evt.waitUntil(
-  caches.keys().then(keys => {
-    // console.log(keys);//pk
-    return Promise.all(keys
-    .filter(key => key !== staticCacheName)
-    .map(key => caches.delete(key))
-    //delete old caches
-  )
-  })
-);
-});
+  // Always bypass for range requests, due to browser bugs
+  if (request.headers.has('range')) return;
+  event.respondWith(async function() {
+    // Try to get from the cache:
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) return cachedResponse;
 
+    try {
+      // See https://developers.google.com/web/updates/2017/02/navigation-preload#using_the_preloaded_response
+      const response = await event.preloadResponse;
+      if (response) return response;
 
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    // Try the cache
-    caches.match(event.request).then(function(response) {
-      // Fall back to network
-      return response || fetch(event.request);
-    }).catch(function() {
-      // If both fail, show a generic fallback:
-      return caches.match('/fallback.html');
-      // However, in reality you'd have many different
-      // fallbacks, depending on URL & headers.
-      // Eg, a fallback silhouette image for avatars.
-    })
-  );
+      // Otherwise, get from the network
+      return await fetch(request);
+    } catch (err) {
+      // If this was a navigation, show the offline page:
+      if (request.mode === 'navigate') {
+        return caches.match('/fallback.html');
+      }
+
+      // Otherwise throw
+      throw err;
+    }
+  }());
 });
