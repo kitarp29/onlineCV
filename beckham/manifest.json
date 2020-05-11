@@ -25,43 +25,43 @@
       "sizes": "144x144"
     },
     {
-      "src": "/images/icon-152x152.jpeg",
-      "type": "image/jpeg",
+      "src": "/images/icon-152x152.png",
+      "type": "image/png",
       "sizes": "152x152"
     },
     {
-      "src": "/images/icon-192x192.jpeg",
-      "type": "image/jpeg",
+      "src": "/images/icon-192x192.png",
+      "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/images/icon-384x384.jpeg",
-      "type": "image/jpeg",
+      "src": "/images/icon-384x384.png",
+      "type": "image/png",
       "sizes": "384x384"
     },
     {
-      "src": "/images/icon-512x512.jpeg",
-      "type": "image/jpeg",
+      "src": "/images/icon-512x512.png",
+      "type": "image/png",
       "sizes": "512x512"
     },
     {
-      "src": "/images/icon-72x72.jpeg",
-      "type": "image/jpeg",
+      "src": "/images/icon-72x72.png",
+      "type": "image/png",
       "sizes": "72x72"
     },
     {
-      "src": "/images/icon-96x96.jpeg",
-      "type": "image/jpeg",
+      "src": "/images/icon-96x96.png",
+      "type": "image/png",
       "sizes": "96x96"
     },
     {
-      "src": "/images/icon-120x120.jpeg",
-      "type": "image/jpeg",
+      "src": "/images/icon-120x120.png",
+      "type": "image/png",
       "sizes": "120x120"
     },
     {
-      "src": "/images/icon-180x180.jpeg",
-      "type": "image/jpeg",
+      "src": "/images/icon-180x180.png",
+      "type": "image/png",
       "sizes": "180x180"
     }
   ]
