@@ -58,7 +58,7 @@ const assets =[
 ];
 addEventListener('install', (event) => {
   event.waitUntil(async function() {
-    const cache = await caches.open('static-v1');
+    const cache = await caches.open('staticCacheName');
     await cache.addAll(assets);
   }());
 });
