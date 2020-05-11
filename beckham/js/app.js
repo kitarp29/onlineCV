@@ -23,7 +23,7 @@ if (window.location.protocol === 'http:') {
   requireHTTPS.classList.remove('hidden');
 }
 butInstall.addEventListener('click', () => {
-  console.log('👍', 'butInstall-clicked');
+  // console.log('👍', 'butInstall-clicked');
   const promptEvent = window.deferredPrompt;
   if (!promptEvent) {
     // The deferred prompt isn't available.
@@ -33,11 +33,30 @@ butInstall.addEventListener('click', () => {
   promptEvent.prompt();
   // Log the result
   promptEvent.userChoice.then((result) => {
-    console.log('👍', 'userChoice', result);
+    // console.log('👍', 'userChoice', result);
     // Reset the deferred prompt variable, since
     // prompt() can only be called once.
     window.deferredPrompt = null;
     // Hide the install button.
     divInstall.classList.toggle('hidden', true);
   });
+});
+
+window.addEventListener('beforeinstallprompt',(evt) => {
+  app.promptEvent = evt;
+  evt.preventDefault();
+});
+
+function showA2HSPrompt(){
+  app.promptEvent.prompt();
+  app.promptEvent.userChoice.then(handleA2HSResponse);
+}
+
+self.addEventListener('fetch', evt => {
+  //console.log('fetch event', evt);
+  evt.respondWith(
+    caches.match(evt.request).then(cacheRes => {
+      return cacheRes || fetch(evt.request);
+    })
+  );
 });
