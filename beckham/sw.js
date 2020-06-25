@@ -1,6 +1,7 @@
-const  staticCacheName = 'site-static';
-const assets =[
-  '/',
+const staticCacheName = 'site-static-v2';
+const dynamicCacheName = 'site-dynamic-v1';
+const assets = [
+'/',
   '/index.html',
   '/fallback.html',
   '/about.html',
@@ -56,49 +57,43 @@ const assets =[
 '/css/style.css'
 
 ];
-addEventListener('install', (event) => {
-  event.waitUntil(async function() {
-    const cache = await caches.open('staticCacheName');
-    await cache.addAll(assets);
-  }());
+
+// install event
+self.addEventListener('install', evt => {
+  //console.log('service worker installed');
+  evt.waitUntil(
+    caches.open(staticCacheName).then((cache) => {
+      //console.log('caching shell assets');
+      cache.addAll(assets);
+    })
+  );
 });
 
-// See https://developers.google.com/web/updates/2017/02/navigation-preload#activating_navigation_preload
-addEventListener('activate', event => {
-  event.waitUntil(async function() {
-    // Feature-detect
-    if (self.registration.navigationPreload) {
-      // Enable navigation preloads!
-      await self.registration.navigationPreload.enable();
-    }
-  }());
+// activate event
+self.addEventListener('activate', evt => {
+  //console.log('service worker activated');
+  evt.waitUntil(
+    caches.keys().then(keys => {
+      //console.log(keys);
+      return Promise.all(keys
+        .filter(key => key !== staticCacheName && key !== dynamicCacheName)
+        .map(key => caches.delete(key))
+      );
+    })
+  );
 });
 
-addEventListener('fetch', (event) => {
-  const { request } = event;
-
-  // Always bypass for range requests, due to browser bugs
-  if (request.headers.has('range')) return;
-  event.respondWith(async function() {
-    // Try to get from the cache:
-    const cachedResponse = await caches.match(request);
-    if (cachedResponse) return cachedResponse;
-
-    try {
-      // See https://developers.google.com/web/updates/2017/02/navigation-preload#using_the_preloaded_response
-      const response = await event.preloadResponse;
-      if (response) return response;
-
-      // Otherwise, get from the network
-      return await fetch(request);
-    } catch (err) {
-      // If this was a navigation, show the offline page:
-      if (request.mode === 'navigate') {
-        return caches.match('/fallback.html');
-      }
-
-      // Otherwise throw
-      throw err;
-    }
-  }());
+// fetch event
+self.addEventListener('fetch', evt => {
+  //console.log('fetch event', evt);
+  evt.respondWith(
+    caches.match(evt.request).then(cacheRes => {
+      return cacheRes || fetch(evt.request).then(fetchRes => {
+        return caches.open(dynamicCacheName).then(cache => {
+          cache.put(evt.request.url, fetchRes.clone());
+          return fetchRes;
+        })
+      });
+    }).catch(() => caches.match('/fallback.html'))
+  );
 });
