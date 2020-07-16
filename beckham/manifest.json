@@ -64,5 +64,19 @@
       "type": "image/png",
       "sizes": "180x180"
     }
-  ]
+  ],
+  "shortcuts": [
+   {
+      "name": "Connect",
+      "description": "Contact to Pratik",
+      "url": "/contact.html",
+      "icons": [
+         {
+            "src": "/images/contact.png",
+            "type": "png",
+            "purpose": "any"
+         }
+      ]
+   }
+]
 }
