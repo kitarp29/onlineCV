@@ -6,6 +6,7 @@ const assets = [
   '/fallback.html',
   '/about.html',
   '/portfolio.html',
+  '/portfolio2.html',
   '/js/aos.js',
   '/js/app.js',
   '/js/bootstrap-datepicker.js',
